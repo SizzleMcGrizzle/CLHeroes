@@ -1,0 +1,6 @@
+Prefix: "&f[&4Craft&fCitizen] "
+Delay: '432000'
+
+Log_Lag_Over_Milis: 100
+Debug: []
+Version: 1
