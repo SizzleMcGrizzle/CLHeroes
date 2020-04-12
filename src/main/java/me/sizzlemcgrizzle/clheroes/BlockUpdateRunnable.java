@@ -15,6 +15,8 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.mineacademy.fo.Common;
+import org.mineacademy.fo.FileUtil;
 import org.mineacademy.fo.plugin.SimplePlugin;
 
 import java.io.File;
@@ -107,7 +109,7 @@ public class BlockUpdateRunnable extends BukkitRunnable {
 	private static class ApplyBaltopRunnable extends BukkitRunnable {
 		private LinkedHashMap<String, Double> map;
 
-		public ApplyBaltopRunnable(LinkedHashMap<String, Double> map) {
+		ApplyBaltopRunnable(LinkedHashMap<String, Double> map) {
 			this.map = map;
 		}
 
@@ -117,11 +119,8 @@ public class BlockUpdateRunnable extends BukkitRunnable {
 			YamlConfiguration config = new YamlConfiguration();
 
 			if (!file.exists()) {
-				try {
-					file.createNewFile();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				Common.log("locations doesn't exist, creating now");
+				FileUtil.extract("locations.yml");
 			}
 
 			try {
@@ -141,11 +140,7 @@ public class BlockUpdateRunnable extends BukkitRunnable {
 
 				signLocation = BlockUpdateRunnable.parseLocation(configSection.getString("sign_location"));
 				headLocation = BlockUpdateRunnable.parseLocation(configSection.getString("head_location"));
-				if (signLocation == null || headLocation == null) {
-					counter++;
-					continue;
-				}
-				if (!MaterialUtil.isSign(signLocation.getBlock().getType())) {
+				if (signLocation == null || !MaterialUtil.isSign(signLocation.getBlock().getType())) {
 					counter++;
 					continue;
 				}
@@ -156,17 +151,32 @@ public class BlockUpdateRunnable extends BukkitRunnable {
 				sign.setLine(2, ChatColor.GOLD + "$" + e);
 				sign.update();
 
-				if (!MaterialUtil.isHead(headLocation.getBlock().getType())) {
+				if (headLocation == null || !MaterialUtil.isHead(headLocation.getBlock().getType())) {
 					counter++;
 					continue;
 				}
-				Skull skull = (Skull) headLocation.getBlock().getState();
-				skull.setOwningPlayer(Bukkit.getOfflinePlayer(uuid));
-				skull.update();
+				new ApplyBaltopHeadRunnable(headLocation, uuid).runTaskLater(SimplePlugin.getInstance(), counter * 10);
 
 				counter++;
 			}
 			new CalculateClanScore().runTaskAsynchronously(CLHeroesPlugin.getInstance());
+		}
+	}
+
+	private static class ApplyBaltopHeadRunnable extends BukkitRunnable {
+		Location location;
+		UUID uuid;
+
+		ApplyBaltopHeadRunnable(Location location, UUID uuid) {
+			this.location = location;
+			this.uuid = uuid;
+		}
+
+		@Override
+		public void run() {
+			Skull skull = (Skull) location.getBlock().getState();
+			skull.setOwningPlayer(Bukkit.getOfflinePlayer(uuid));
+			skull.update();
 		}
 	}
 
@@ -175,18 +185,14 @@ public class BlockUpdateRunnable extends BukkitRunnable {
 		private YamlConfiguration config = new YamlConfiguration();
 		List<Clan> topClans;
 
-		public ApplyClanRunnable(List<Clan> topClans) {
+		ApplyClanRunnable(List<Clan> topClans) {
 			this.topClans = topClans;
 		}
 
 		@Override
 		public void run() {
 			if (!file.exists()) {
-				try {
-					file.createNewFile();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				FileUtil.extract("locations.yml");
 			}
 
 			try {
@@ -281,6 +287,8 @@ public class BlockUpdateRunnable extends BukkitRunnable {
 		double x, y, z;
 		World world;
 
+		if (string == null || !string.contains("&====&"))
+			return null;
 		String[] array = string.split("&====&");
 		if (array.length < 4)
 			return null;

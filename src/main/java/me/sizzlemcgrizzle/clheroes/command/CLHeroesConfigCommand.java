@@ -3,6 +3,7 @@ package me.sizzlemcgrizzle.clheroes.command;
 import me.sizzlemcgrizzle.clheroes.command.settings.Settings;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.mineacademy.fo.FileUtil;
 import org.mineacademy.fo.command.SimpleCommandGroup;
 import org.mineacademy.fo.command.SimpleSubCommand;
 import org.mineacademy.fo.plugin.SimplePlugin;
@@ -33,11 +34,7 @@ public class CLHeroesConfigCommand extends SimpleSubCommand {
 		YamlConfiguration config = new YamlConfiguration();
 
 		if (!file.exists()) {
-			try {
-				file.createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			FileUtil.extract("settings.yml");
 		}
 
 		try {

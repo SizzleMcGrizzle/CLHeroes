@@ -8,6 +8,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.mineacademy.fo.FileUtil;
 import org.mineacademy.fo.command.SimpleCommandGroup;
 import org.mineacademy.fo.command.SimpleSubCommand;
 import org.mineacademy.fo.plugin.SimplePlugin;
@@ -50,7 +51,7 @@ public class CLHeroesAddLocationCommand extends SimpleSubCommand {
 
 		try {
 			if (!file.exists())
-				file.createNewFile();
+				FileUtil.extract("locations.yml");
 			config.load(file);
 		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();

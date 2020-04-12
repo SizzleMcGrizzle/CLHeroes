@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.mineacademy.fo.FileUtil;
 import org.mineacademy.fo.plugin.SimplePlugin;
 
 import java.io.File;
@@ -43,6 +44,9 @@ public class BlockLocationUtil {
 	public static void removeBlockLocation(Location location) throws IOException, InvalidConfigurationException {
 		File file = new File(SimplePlugin.getInstance().getDataFolder() + File.separator + "locations.yml");
 		YamlConfiguration config = new YamlConfiguration();
+
+		if (!file.exists())
+			FileUtil.extract("locations.yml");
 
 		config.load(file);
 
