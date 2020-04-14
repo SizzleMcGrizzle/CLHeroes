@@ -1,23 +1,11 @@
 package me.sizzlemcgrizzle.clheroes;
 
-import me.sizzlemcgrizzle.clheroes.command.util.BlockLocationUtil;
-import me.sizzlemcgrizzle.clheroes.command.util.MaterialUtil;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
-
-import java.io.IOException;
 
 public class BlockBreakListener implements Listener {
 
 
-	@EventHandler(ignoreCancelled = true)
+	/*@EventHandler(ignoreCancelled = true)
 	public void onBreakEvent(BlockBreakEvent event) throws IOException, InvalidConfigurationException {
 		Material material = event.getBlock().getType();
 		Location location = event.getBlock().getLocation();
@@ -41,5 +29,5 @@ public class BlockBreakListener implements Listener {
 			}
 		}
 
-	}
+	}*/
 }
