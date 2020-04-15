@@ -2,6 +2,7 @@ package me.sizzlemcgrizzle.clheroes;
 
 import me.sizzlemcgrizzle.clheroes.command.CLHeroesCommand;
 import me.sizzlemcgrizzle.clheroes.command.settings.Settings;
+import me.sizzlemcgrizzle.clheroes.runnables.BaltopCalculateRunnable;
 import org.mineacademy.fo.plugin.SimplePlugin;
 import org.mineacademy.fo.settings.YamlStaticConfig;
 
@@ -15,12 +16,12 @@ public class CLHeroesPlugin extends SimplePlugin {
 
 		registerEvents(new BlockBreakListener());
 
-		new BlockUpdateRunnable().runTaskTimer(this, 0, Settings.DELAY);
+		new BaltopCalculateRunnable().runTaskTimerAsynchronously(this, 0, Settings.DELAY);
 	}
 
 	@Override
 	protected void onPluginReload() {
-		new BlockUpdateRunnable().runTaskTimer(this, 0, Settings.DELAY);
+		new BaltopCalculateRunnable().runTaskTimerAsynchronously(this, 0, Settings.DELAY);
 	}
 
 	@Override

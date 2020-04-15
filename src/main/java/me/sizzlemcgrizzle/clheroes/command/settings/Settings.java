@@ -22,11 +22,13 @@ public class Settings extends SimpleSettings {
 
 	public static String PREFIX;
 	public static Integer DELAY;
+	public static Boolean DEBUG_MESSAGES;
 
 	private static void init() {
 		pathPrefix(null);
 		PREFIX = getString("Prefix");
 		DELAY = Integer.valueOf(getString("Delay"));
+		DEBUG_MESSAGES = getBoolean("Debug_Messages");
 	}
 
 

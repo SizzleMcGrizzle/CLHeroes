@@ -8,6 +8,7 @@ public class CLHeroesCommand extends SimpleCommandGroup {
 		registerSubcommand(new CLHeroesAddLocationCommand(this));
 		registerSubcommand(new CLHeroesReloadCommand(this));
 		registerSubcommand(new CLHeroesConfigCommand(this));
+		registerSubcommand(new CLHeroesRefreshCommand(this));
 	}
 
 	@Override

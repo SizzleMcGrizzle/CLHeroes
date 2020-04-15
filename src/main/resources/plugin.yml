@@ -4,4 +4,6 @@ main: me.sizzlemcgrizzle.clheroes.CLHeroesPlugin
 author: sizzlemcgrizzle
 api-version: 1.13
 description: Signs to display baltop and clan ranking
+depend:
+  - Essentials
 

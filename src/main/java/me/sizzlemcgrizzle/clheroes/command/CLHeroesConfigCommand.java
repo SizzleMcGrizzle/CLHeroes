@@ -44,9 +44,17 @@ public class CLHeroesConfigCommand extends SimpleSubCommand {
 		}
 
 		if (args[0].equalsIgnoreCase("setprefix")) {
+			if (args.length < 2) {
+				tell(Settings.PREFIX + "&cYou didn't input a prefix!");
+				return;
+			}
 			config.set("Prefix", args[1] + " ");
 			tell(Settings.PREFIX + "&aPrefix has been updated. Do &2/heroes reload&a to apply changes.");
 		} else if (args[0].equalsIgnoreCase("setdelay")) {
+			if (args.length < 2) {
+				tell(Settings.PREFIX + "&cYou didn't input a delay!");
+				return;
+			}
 			config.set("Delay", args[1]);
 			tell(Settings.PREFIX + "&aDelay has been updated. Do &2/heroes reload&a to apply changes.");
 		} else
