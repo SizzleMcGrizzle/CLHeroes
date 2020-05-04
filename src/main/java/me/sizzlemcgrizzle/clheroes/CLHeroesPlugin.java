@@ -13,17 +13,15 @@ public class CLHeroesPlugin extends SimplePlugin {
 	@Override
 	protected void onPluginStart() {
 		registerCommands("heroes", new CLHeroesCommand());
-
-		registerEvents(new BlockBreakListener());
-
+		
 		new BaltopCalculateRunnable().runTaskTimerAsynchronously(this, 0, Settings.DELAY);
 	}
-
+	
 	@Override
 	protected void onPluginReload() {
 		new BaltopCalculateRunnable().runTaskTimerAsynchronously(this, 0, Settings.DELAY);
 	}
-
+	
 	@Override
 	public List<Class<? extends YamlStaticConfig>> getSettings() {
 		return Arrays.asList(Settings.class);

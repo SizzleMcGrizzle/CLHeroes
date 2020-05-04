@@ -5,6 +5,7 @@ import me.sizzlemcgrizzle.clheroes.command.settings.Settings;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.mineacademy.fo.Common;
 import org.mineacademy.fo.plugin.SimplePlugin;
 
@@ -14,47 +15,51 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class BaltopCalculateRunnable extends HeroRunnable {
+public class BaltopCalculateRunnable extends BukkitRunnable {
 	private IEssentials ess = (IEssentials) Bukkit.getPluginManager().getPlugin("Essentials");
 	private File folder;
 	private LinkedHashMap<String, Double> top3 = new LinkedHashMap<>();
 	private Map<String, Double> balances = new HashMap<>();
-	private String first = null, second = null, third = null;
-
+	private String first, second, third;
+	
 	@Override
-	public void doFunction() {
+	public void run() {
+		first = null;
+		second = null;
+		third = null;
+		balances.clear();
+		top3.clear();
+		
 		folder = new File(ess.getDataFolder(), "userdata");
-
+		
 		if (!doesFolderExist(folder) || folder.listFiles() == null)
 			return;
-
+		
 		if (ess.getSettings().isEcoDisabled()) {
 			if (ess.getSettings().isDebug()) {
 				ess.getLogger().info("Internal economy functions disabled, aborting baltop.");
 			}
 			return;
 		}
-
+		
 		createBalances();
-
+		
 		getTop3();
-
-		top3.put(first, balances.get(first));
-		top3.put(second, balances.get(second));
-		top3.put(third, balances.get(third));
-
+		
+		if (first != null)
+			top3.put(first, balances.get(first));
+		if (second != null)
+			top3.put(second, balances.get(second));
+		if (third != null)
+			top3.put(third, balances.get(third));
+		
 		if (Settings.DEBUG_MESSAGES) {
 			top3.forEach((a, v) -> Common.log("UUID " + a + " has a balance of " + v));
 		}
-
+		
 		new BaltopApplyRunnable(top3).runTask(SimplePlugin.getInstance());
 	}
-
-	@Override
-	public void run() {
-		doFunction();
-	}
-
+	
 	private void getTop3() {
 		for (Map.Entry<String, Double> entry : balances.entrySet()) {
 			Double balance = entry.getValue();
@@ -75,7 +80,7 @@ public class BaltopCalculateRunnable extends HeroRunnable {
 			}
 		}
 	}
-
+	
 	private void createBalances() {
 		for (File file : folder.listFiles()) {
 			YamlConfiguration reader = YamlConfiguration.loadConfiguration(file);
@@ -85,10 +90,10 @@ public class BaltopCalculateRunnable extends HeroRunnable {
 			} catch (IOException | InvalidConfigurationException e) {
 				e.printStackTrace();
 			}
-			if (!reader.getKeys(false).contains("money"))
-				balance = 0.0;
-			else if (reader.getString("money") == null)
+			if (reader.contains("npc") && reader.getBoolean("npc"))
 				continue;
+			else if (!reader.getKeys(false).contains("money"))
+				balance = 0.0;
 			else
 				balance = Double.parseDouble(reader.getString("money"));
 			String name = file.getName().replace(".yml", "");
@@ -98,7 +103,7 @@ public class BaltopCalculateRunnable extends HeroRunnable {
 			balances.put(name, balance);
 		}
 	}
-
+	
 	private boolean doesFolderExist(File file) {
 		if (!file.exists()) {
 			try {

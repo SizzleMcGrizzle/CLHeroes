@@ -1,5 +1,6 @@
 package me.sizzlemcgrizzle.clheroes.runnables;
 
+import de.craftlancer.core.util.Tuple;
 import me.sizzlemcgrizzle.clheroes.command.settings.Settings;
 import me.sizzlemcgrizzle.clheroes.command.util.MaterialUtil;
 import org.bukkit.Bukkit;
@@ -15,17 +16,17 @@ import org.mineacademy.fo.plugin.SimplePlugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
-public class BaltopApplyRunnable extends BukkitRunnable {
+public class PlayerScoreApplyRunnable extends BukkitRunnable {
+	
+	private List<Tuple<UUID, Integer>> top3;
+	
 	private File file = new File(SimplePlugin.getInstance().getDataFolder(), "locations.yml");
 	private YamlConfiguration config = new YamlConfiguration();
-	private LinkedHashMap<String, Double> top3;
 	
-	public BaltopApplyRunnable(LinkedHashMap<String, Double> top3) {
+	PlayerScoreApplyRunnable(List<Tuple<UUID, Integer>> top3) {
 		this.top3 = top3;
 	}
 	
@@ -38,19 +39,16 @@ public class BaltopApplyRunnable extends BukkitRunnable {
 			config.load(file);
 			
 			int counter = 1;
-			for (Map.Entry<String, Double> entry : top3.entrySet()) {
-				if (entry == null || entry.getKey() == null || entry.getValue() == null) {
-					counter++;
-					continue;
-				}
-				UUID uuid = UUID.fromString(entry.getKey());
-				ConfigurationSection configSection = config.getConfigurationSection("baltop").getConfigurationSection(String.valueOf(counter));
+			for (Tuple<UUID, Integer> entry : top3) {
+				
+				UUID uuid = entry.getKey();
+				ConfigurationSection configSection = config.getConfigurationSection("playerscore").getConfigurationSection(String.valueOf(counter));
 				
 				List<Location> signLocationList = (List<Location>) configSection.getList("sign_location");
 				List<Location> headLocationList = (List<Location>) configSection.getList("head_location");
 				if (signLocationList != null)
 					for (Location signLocation : signLocationList)
-						setBaltopSign(uuid, signLocation, entry.getValue());
+						setSign(signLocation, entry.getValue(), entry.getKey());
 				
 				if (headLocationList != null)
 					for (int i = 0; i < headLocationList.size(); i++)
@@ -59,24 +57,22 @@ public class BaltopApplyRunnable extends BukkitRunnable {
 				
 				counter++;
 			}
-			new ClanCalculateRunnable().runTaskAsynchronously(SimplePlugin.getInstance());
 		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();
 			
 		}
 	}
 	
-	private static void setBaltopSign(UUID uuid, Location signLocation, Double balance) {
-		if (signLocation == null || !MaterialUtil.isSign(signLocation.getBlock().getType()) || !signLocation.getWorld().isChunkLoaded(signLocation.getBlockX() >> 4, signLocation.getBlockZ() >> 4)) {
+	private void setSign(Location signLocation, int score, UUID playerUUID) {
+		if (signLocation == null || !MaterialUtil.isSign(signLocation.getBlock().getType()) || !signLocation.getWorld().isChunkLoaded(signLocation.getBlockX() >> 4, signLocation.getBlockZ() >> 4))
 			return;
-		}
-		double i = balance;
-		int e = (int) i;
 		org.bukkit.block.Sign sign = (org.bukkit.block.Sign) signLocation.getBlock().getState();
-		sign.setLine(1, ChatColor.WHITE + Bukkit.getOfflinePlayer(uuid).getName());
-		sign.setLine(2, ChatColor.GOLD + "$" + e);
+		sign.setLine(1, ChatColor.WHITE + Bukkit.getOfflinePlayer(playerUUID).getName());
+		sign.setLine(2, ChatColor.GOLD + "" + score);
 		sign.update();
 		if (Settings.DEBUG_MESSAGES)
-			Common.log("Setting baltop sign, with player " + Bukkit.getOfflinePlayer(uuid).getName());
+			Common.log("Setting baltop sign, with player " + Bukkit.getOfflinePlayer(playerUUID).getName());
 	}
 }
+
+

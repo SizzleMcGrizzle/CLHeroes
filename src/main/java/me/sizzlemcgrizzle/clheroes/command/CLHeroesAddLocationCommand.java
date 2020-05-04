@@ -25,30 +25,30 @@ public class CLHeroesAddLocationCommand extends SimpleSubCommand {
 		setPermission("clheroes.addlocation");
 		setMinArguments(3);
 	}
-
+	
 	@Override
 	protected List<String> tabComplete() {
 		if (args.length == 1)
 			return completeLastWord(Arrays.asList("sign", "head", "banner"));
 		if (args.length == 2) {
 			if (args[0].equalsIgnoreCase("head"))
-				return completeLastWord("baltop");
+				return completeLastWord(Arrays.asList("baltop", "playerscore"));
 			else if (args[0].equalsIgnoreCase("banner"))
 				return completeLastWord("clan");
 			else
-				return completeLastWord(Arrays.asList("clan", "baltop"));
+				return completeLastWord(Arrays.asList("clan", "baltop", "playerscore"));
 		}
 		if (args.length == 3)
 			return Arrays.asList("1", "2", "3");
 		return new ArrayList<>();
 	}
-
+	
 	@Override
 	protected void onCommand() {
 		File file = new File(SimplePlugin.getInstance().getDataFolder() + File.separator + "locations.yml");
 		YamlConfiguration config = new YamlConfiguration();
 		ConfigurationSection configSection;
-
+		
 		try {
 			if (!file.exists())
 				FileUtil.extract("locations.yml");
@@ -56,37 +56,41 @@ public class CLHeroesAddLocationCommand extends SimpleSubCommand {
 		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();
 		}
-
+		
 		Player player = getPlayer();
 		Location blockLocation = player.getTargetBlock(null, 5).getLocation();
 		Material material = blockLocation.getBlock().getType();
-
-		String location = blockLocation.getX() + "&====&" + blockLocation.getY() + "&====&" + blockLocation.getZ() + "&====&" + blockLocation.getWorld().getName();
-
+		
 		if (args[0].equalsIgnoreCase("Sign")) {
 			if (!MaterialUtil.isSign(material)) {
 				tell(Settings.PREFIX + "&cYou are not looking at a sign!");
 				return;
 			}
 			configSection = config.getConfigurationSection(args[1].toLowerCase()).getConfigurationSection(args[2]);
-			configSection.set("sign_location", location);
-			tell(Settings.PREFIX + "&aLocation has been set.");
+			List<Location> list = (List<Location>) configSection.getList("sign_location");
+			list.add(blockLocation);
+			configSection.set("sign_location", list);
+			tell(Settings.PREFIX + "&a" + args[0] + " " + args[1] + " location has been set for rank " + args[2]);
 		} else if (args[0].equalsIgnoreCase("Head")) {
 			if (!MaterialUtil.isHead(material)) {
 				tell(Settings.PREFIX + "&cYou are not looking at a head!");
 				return;
 			}
 			configSection = config.getConfigurationSection(args[1].toLowerCase()).getConfigurationSection(args[2]);
-			configSection.set("head_location", location);
-			tell(Settings.PREFIX + "&aLocation has been set.");
+			List<Location> list = (List<Location>) configSection.getList("head_location");
+			list.add(blockLocation);
+			configSection.set("head_location", list);
+			tell(Settings.PREFIX + "&a" + args[0] + " " + args[1] + " location has been set for rank " + args[2]);
 		} else if (args[0].equalsIgnoreCase("Banner")) {
 			if (!MaterialUtil.isBanner(material)) {
 				tell(Settings.PREFIX + "&cYou are not looking at a banner!");
 				return;
 			}
 			configSection = config.getConfigurationSection(args[1].toLowerCase()).getConfigurationSection(args[2]);
-			configSection.set("banner_location", location);
-			tell(Settings.PREFIX + "&aLocation has been set.");
+			List<Location> list = (List<Location>) configSection.getList("banner_location");
+			list.add(blockLocation);
+			configSection.set("banner_location", list);
+			tell(Settings.PREFIX + "&a" + args[0] + " " + args[1] + " location has been set for rank " + args[2]);
 		} else
 			tell(Settings.PREFIX + "&cYou must enter &e'banner'&c, &e'sign'&c, or &e'head'&c in the first argument!");
 		try {

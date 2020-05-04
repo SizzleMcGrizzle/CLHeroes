@@ -1,20 +1,30 @@
 clan:
   1:
-    banner_location: ""
-    sign_location: ""
+    banner_location: []
+    sign_location: []
   2:
-    banner_location: ""
-    sign_location: ""
+    banner_location: []
+    sign_location: []
   3:
-    banner_location: ""
-    sign_location: ""
+    banner_location: []
+    sign_location: []
 baltop:
   1:
-    head_location: ""
-    sign_location: ""
+    head_location: []
+    sign_location: []
   2:
-    head_location: ""
-    sign_location: ""
+    head_location: []
+    sign_location: []
   3:
-    head_location: ""
-    sign_location: ""
+    head_location: []
+    sign_location: []
+playerscore:
+  1:
+    head_location: []
+    sign_location: []
+  2:
+    head_location: []
+    sign_location: []
+  3:
+    head_location: []
+    sign_location: []
